@@ -16,7 +16,7 @@ import prisma from './lib/prisma.js';
 // Load environment variables
 dotenv.config();
 
-// ==================== Keep-Alive Mechanism ====================
+// ==================== Keep-Alive Functionality ====================
 // Prevents Render (free tier) and Neon database from going to sleep
 const KEEP_ALIVE_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
