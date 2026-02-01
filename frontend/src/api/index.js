@@ -42,6 +42,26 @@ export const checkHealth = async () => {
 
 
 
+// ==================== Players API ====================
+export const getPlayers = async (params = {}) => {
+    const response = await api.get('/players', { params });
+    return response.data;
+};
+
+export const getPlayerById = async (id) => {
+    const response = await api.get(`/players/${id}`);
+    return response.data;
+};
+
+export const getPlayerBatting = async (id, params = {}) => {
+    const response = await api.get(`/players/${id}/batting`, { params });
+    return response.data;
+};
+
+export const getPlayerBowling = async (id, params = {}) => {
+    const response = await api.get(`/players/${id}/bowling`, { params });
+    return response.data;
+};
 
 // ==================== Matches API ====================
 export const getMatches = async (params = {}) => {
