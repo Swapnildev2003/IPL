@@ -10,8 +10,31 @@ import playerRoutes from './routes/players.js';
 import matchRoutes from './routes/matches.js';
 import statsRoutes from './routes/stats.js';
 
+// Import Prisma for keep-alive
+import prisma from './lib/prisma.js';
+
 // Load environment variables
 dotenv.config();
+
+// ==================== Keep-Alive Mechanism ====================
+// Prevents Render (free tier) and Neon database from going to sleep
+const KEEP_ALIVE_INTERVAL = 5 * 60 * 1000; // 5 minutes
+
+const keepAlive = async () => {
+    try {
+        // Simple query to keep the database connection warm
+        await prisma.$queryRaw`SELECT 1`;
+        console.log(`[Keep-Alive] Database ping successful at ${new Date().toISOString()}`);
+    } catch (error) {
+        console.error('[Keep-Alive] Database ping failed:', error.message);
+    }
+};
+
+// Start keep-alive interval (only in production)
+if (process.env.NODE_ENV === 'production') {
+    setInterval(keepAlive, KEEP_ALIVE_INTERVAL);
+    console.log('[Keep-Alive] Started - pinging database every 5 minutes');
+}
 
 const app = express();
 const PORT = process.env.PORT || 5000;
