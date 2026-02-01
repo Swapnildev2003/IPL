@@ -23,7 +23,7 @@ const readJSON = (filePath) => {
 
 // Seed Teams
 const seedTeams = async () => {
-    console.log('🏏 Seeding teams...');
+    console.log('Seeding teams...');
     const teamsData = readJSON(path.join(DATA_PATH, 'teams/teams.json'));
 
     if (!teamsData) return;
@@ -43,12 +43,12 @@ const seedTeams = async () => {
             }
         });
     }
-    console.log(`✅ Seeded ${teamsData.length} teams`);
+    console.log(`Seeded ${teamsData.length} teams`);
 };
 
 // Seed Players from squads
 const seedPlayers = async () => {
-    console.log('👤 Seeding players...');
+    console.log('Seeding players...');
     const squadsData = readJSON(path.join(DATA_PATH, 'squads/squads.json'));
 
     if (!squadsData) return;
@@ -136,12 +136,12 @@ const seedPlayers = async () => {
             playerCount++;
         }
     }
-    console.log(`✅ Seeded ${playerCount} players`);
+    console.log(`Seeded ${playerCount} players`);
 };
 
 // Seed Venues and Matches
 const seedMatches = async () => {
-    console.log('📍 Seeding venues and matches...');
+    console.log('Seeding venues and matches...');
     const matchesData = readJSON(path.join(DATA_PATH, 'matches/matches.json'));
 
     if (!matchesData) return;
@@ -206,12 +206,12 @@ const seedMatches = async () => {
 
         matchCount++;
     }
-    console.log(`✅ Seeded ${matchCount} matches`);
+    console.log(`Seeded ${matchCount} matches`);
 };
 
 // Seed Scorecards (innings and performances)
 const seedScorecards = async () => {
-    console.log('📊 Seeding scorecards...');
+    console.log('Seeding scorecards...');
     const scorecardsDir = path.join(DATA_PATH, 'scorecards');
 
     if (!fs.existsSync(scorecardsDir)) {
@@ -333,12 +333,12 @@ const seedScorecards = async () => {
             inningsCount++;
         }
     }
-    console.log(`✅ Seeded ${inningsCount} innings with performances`);
+    console.log(`Seeded ${inningsCount} innings with performances`);
 };
 
 // Seed Standings
 const seedStandings = async () => {
-    console.log('📈 Seeding standings...');
+    console.log('Seeding standings...');
     const standingsData = readJSON(path.join(DATA_PATH, 'standings/standings.json'));
 
     if (!standingsData || !standingsData.standings) return;
@@ -384,12 +384,12 @@ const seedStandings = async () => {
             count++;
         }
     }
-    console.log(`✅ Seeded ${count} standings`);
+    console.log(`Seeded ${count} standings`);
 };
 
 // Main seed function
 const main = async () => {
-    console.log('🚀 Starting database seed...\n');
+    console.log('Starting database seed...\n');
 
     try {
         await seedTeams();
@@ -398,9 +398,9 @@ const main = async () => {
         await seedScorecards();
         await seedStandings();
 
-        console.log('\n✅ Database seeding completed successfully!');
+        console.log('\nDatabase seeding completed successfully!');
     } catch (error) {
-        console.error('❌ Error seeding database:', error);
+        console.error('Error seeding database:', error);
         throw error;
     }
 };
