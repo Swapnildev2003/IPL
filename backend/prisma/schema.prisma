@@ -1,0 +1,256 @@
+// Prisma schema for IPL Data Platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Team model - IPL franchise teams
+model Team {
+  id           Int      @id @default(autoincrement())
+  tid          Int      @unique // External team ID from data source
+  title        String
+  abbreviation String   @db.VarChar(10)
+  logoUrl      String?
+  thumbUrl     String?
+  country      String?
+  sex          String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relationships
+  players          TeamPlayer[]
+  homeMatches      Match[]              @relation("HomeTeam")
+  awayMatches      Match[]              @relation("AwayTeam")
+  wonMatches       Match[]              @relation("WinningTeam")
+  tossWonMatches   Match[]              @relation("TossWinner")
+  battingInnings   Innings[]            @relation("BattingTeam")
+  fieldingInnings  Innings[]            @relation("FieldingTeam")
+  standings        Standing[]
+
+  @@map("teams")
+}
+
+// Player model - Cricket players
+model Player {
+  id              Int      @id @default(autoincrement())
+  pid             Int      @unique // External player ID
+  title           String
+  shortName       String?
+  firstName       String?
+  lastName        String?
+  middleName      String?
+  birthdate       String?
+  birthplace      String?
+  country         String?
+  playingRole     String?  // bat, bowl, all, wk
+  battingStyle    String?
+  bowlingStyle    String?
+  fieldingPosition String?
+  nationality     String?
+  thumbUrl        String?
+  logoUrl         String?
+  fantasyRating   Float?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relationships
+  teams              TeamPlayer[]
+  battingPerformances BattingPerformance[]
+  bowlingPerformances BowlingPerformance[]
+  manOfTheMatch      Match[]              @relation("ManOfTheMatch")
+  dismissedBy        BattingPerformance[] @relation("Bowler")
+
+  @@map("players")
+}
+
+// TeamPlayer - Many-to-many relationship between teams and players
+model TeamPlayer {
+  id        Int      @id @default(autoincrement())
+  teamId    Int
+  playerId  Int
+  role      String?  // squad, playing11
+  roleStr   String?  // (C), (WK)
+  createdAt DateTime @default(now())
+
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, playerId])
+  @@map("team_players")
+}
+
+// Venue model - Match venues
+model Venue {
+  id        Int      @id @default(autoincrement())
+  venueId   String   @unique // External venue ID
+  name      String
+  location  String?
+  country   String?
+  timezone  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  matches Match[]
+
+  @@map("venues")
+}
+
+// Match model - IPL matches
+model Match {
+  id              Int      @id @default(autoincrement())
+  matchId         Int      @unique // External match ID
+  title           String
+  shortTitle      String?
+  subtitle        String?
+  matchNumber     String?
+  format          String?  // T20
+  status          String?  // Completed, Live, Upcoming
+  statusNote      String?
+  dateStart       DateTime?
+  dateEnd         DateTime?
+  result          String?
+  winMargin       String?
+  tossText        String?
+  tossDecision    String?  // bat, bowl
+  umpires         String?
+  referee         String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Foreign keys
+  teamAId         Int?
+  teamBId         Int?
+  venueId         Int?
+  winningTeamId   Int?
+  tossWinnerId    Int?
+  manOfTheMatchId Int?
+
+  // Relationships
+  teamA         Team?    @relation("HomeTeam", fields: [teamAId], references: [id])
+  teamB         Team?    @relation("AwayTeam", fields: [teamBId], references: [id])
+  venue         Venue?   @relation(fields: [venueId], references: [id])
+  winningTeam   Team?    @relation("WinningTeam", fields: [winningTeamId], references: [id])
+  tossWinner    Team?    @relation("TossWinner", fields: [tossWinnerId], references: [id])
+  manOfTheMatch Player?  @relation("ManOfTheMatch", fields: [manOfTheMatchId], references: [id])
+  innings       Innings[]
+
+  @@map("matches")
+}
+
+// Innings model - Match innings
+model Innings {
+  id             Int      @id @default(autoincrement())
+  iid            Int?     @unique // External innings ID
+  inningsNumber  Int
+  name           String?
+  shortName      String?
+  status         Int?
+  totalRuns      Int?
+  totalWickets   Int?
+  totalOvers     String?
+  runRate        Float?
+  target         Int?
+  extrasByes     Int?     @default(0)
+  extrasLegByes  Int?     @default(0)
+  extrasWides    Int?     @default(0)
+  extrasNoBalls  Int?     @default(0)
+  extrasTotal    Int?     @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Foreign keys
+  matchId        Int
+  battingTeamId  Int?
+  fieldingTeamId Int?
+
+  // Relationships
+  match              Match                @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  battingTeam        Team?                @relation("BattingTeam", fields: [battingTeamId], references: [id])
+  fieldingTeam       Team?                @relation("FieldingTeam", fields: [fieldingTeamId], references: [id])
+  battingPerformances BattingPerformance[]
+  bowlingPerformances BowlingPerformance[]
+
+  @@map("innings")
+}
+
+// BattingPerformance - Individual batting stats per innings
+model BattingPerformance {
+  id           Int      @id @default(autoincrement())
+  runs         Int      @default(0)
+  ballsFaced   Int      @default(0)
+  fours        Int      @default(0)
+  sixes        Int      @default(0)
+  strikeRate   Float?
+  howOut       String?
+  dismissal    String?  // caught, bowled, lbw, runout, stumped, not out
+  position     Int?     // batting position
+  createdAt    DateTime @default(now())
+
+  // Foreign keys
+  inningsId    Int
+  playerId     Int
+  bowlerId     Int?     // bowler who took the wicket
+
+  // Relationships
+  innings  Innings @relation(fields: [inningsId], references: [id], onDelete: Cascade)
+  player   Player  @relation(fields: [playerId], references: [id])
+  bowler   Player? @relation("Bowler", fields: [bowlerId], references: [id])
+
+  @@unique([inningsId, playerId])
+  @@map("batting_performances")
+}
+
+// BowlingPerformance - Individual bowling stats per innings
+model BowlingPerformance {
+  id            Int      @id @default(autoincrement())
+  overs         String?
+  maidens       Int      @default(0)
+  runsConceded  Int      @default(0)
+  wickets       Int      @default(0)
+  economy       Float?
+  noBalls       Int      @default(0)
+  wides         Int      @default(0)
+  dotBalls      Int      @default(0)
+  createdAt     DateTime @default(now())
+
+  // Foreign keys
+  inningsId     Int
+  playerId      Int
+
+  // Relationships
+  innings Innings @relation(fields: [inningsId], references: [id], onDelete: Cascade)
+  player  Player  @relation(fields: [playerId], references: [id])
+
+  @@unique([inningsId, playerId])
+  @@map("bowling_performances")
+}
+
+// Standing - Team standings/points table
+model Standing {
+  id          Int      @id @default(autoincrement())
+  round       String?
+  played      Int      @default(0)
+  wins        Int      @default(0)
+  losses      Int      @default(0)
+  ties        Int      @default(0)
+  noResult    Int      @default(0)
+  points      Int      @default(0)
+  netRunRate  Float?
+  position    Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Foreign keys
+  teamId      Int
+
+  // Relationships
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, round])
+  @@map("standings")
+}
