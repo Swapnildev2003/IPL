@@ -40,7 +40,26 @@ export const checkHealth = async () => {
     return response.data;
 };
 
+// ==================== Teams API ====================
+export const getTeams = async (params = {}) => {
+    const response = await api.get('/teams', { params });
+    return response.data;
+};
 
+export const getTeamById = async (id) => {
+    const response = await api.get(`/teams/${id}`);
+    return response.data;
+};
+
+export const getTeamMatches = async (id, params = {}) => {
+    const response = await api.get(`/teams/${id}/matches`, { params });
+    return response.data;
+};
+
+export const getTeamPlayers = async (id) => {
+    const response = await api.get(`/teams/${id}/players`);
+    return response.data;
+};
 
 // ==================== Players API ====================
 export const getPlayers = async (params = {}) => {
@@ -84,6 +103,30 @@ export const getVenues = async () => {
     return response.data;
 };
 
+// ==================== Stats API ====================
+export const getStandings = async (params = {}) => {
+    const response = await api.get('/stats/standings', { params });
+    return response.data;
+};
 
+export const getTopBatsmen = async (params = {}) => {
+    const response = await api.get('/stats/top-batsmen', { params });
+    return response.data;
+};
+
+export const getTopBowlers = async (params = {}) => {
+    const response = await api.get('/stats/top-bowlers', { params });
+    return response.data;
+};
+
+export const getSummary = async () => {
+    const response = await api.get('/stats/summary');
+    return response.data;
+};
+
+export const getTeamPerformance = async () => {
+    const response = await api.get('/stats/team-performance');
+    return response.data;
+};
 
 export default api;
