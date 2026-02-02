@@ -129,18 +129,16 @@ The application uses a custom CSS Design System with:
 ## 📸 Screenshots
 
 ### Dashboard
-![Dashboard](./screenshots/dashboard.png)
+![Dashboard](../screenshots/dashboard.png)
 
 ### Teams Page
-![Teams](./screenshots/teams.png)
+![Teams](../screenshots/teams.png)
 
 ### Players Page
-![Players](./screenshots/players.png)
+![Players](../screenshots/players.png)
 
 ### Matches Page
-![Matches](./screenshots/matches.png)
-
-> Note: Add screenshots to `frontend/screenshots/` folder
+![Matches](../screenshots/matches.png)
 
 ## 🔗 Related Links
 
