@@ -248,8 +248,6 @@ docker-compose up -d --build
 ### API Documentation
 ![Swagger](./screenshots/swagger.png)
 
-> Add screenshots to the `screenshots/` folder
-
 ## 📝 Assumptions
 
 The following assumptions were made during development:
@@ -267,10 +265,6 @@ The following assumptions were made during development:
 
 **Swapnil Dev**
 - GitHub: [@Swapnildev2003](https://github.com/Swapnildev2003)
-
-## 📄 License
-
-This project is for educational/internship purposes.
 
 ---
 
