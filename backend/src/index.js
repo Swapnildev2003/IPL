@@ -44,6 +44,7 @@ app.use(cors());
 app.use(express.json());
 
 // Swagger configuration
+const isProduction = process.env.NODE_ENV === 'production';
 const swaggerOptions = {
     definition: {
         openapi: '3.0.0',
@@ -55,12 +56,19 @@ const swaggerOptions = {
                 name: 'IPL Data API'
             }
         },
-        servers: [
-            {
-                url: `http://localhost:${PORT}`,
-                description: 'Development server'
-            }
-        ]
+        servers: isProduction
+            ? [
+                {
+                    url: 'https://ipl-backend-demg.onrender.com',
+                    description: 'Production server'
+                }
+            ]
+            : [
+                {
+                    url: `http://localhost:${PORT}`,
+                    description: 'Development server'
+                }
+            ]
     },
     apis: ['./src/routes/*.js']
 };
